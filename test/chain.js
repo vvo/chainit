@@ -6,7 +6,7 @@ describe('chaining an Api', function() {
   var o;
 
   beforeEach(function() {
-    o = new ChainApi;
+    o = new ChainApi();
   });
 
   it('has an s prop', function() {

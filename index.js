@@ -11,7 +11,6 @@ function chainit(Constructor) {
   var methods = Object.keys(Constructor.prototype);
   methods.forEach(function(name) {
     var original = Constructor.prototype[name];
-    var fName = Constructor.prototype[name].name || name;
 
     var chained = function() {
       var ctx = this;
