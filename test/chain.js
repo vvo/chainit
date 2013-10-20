@@ -17,17 +17,11 @@ describe('chaining an Api', function() {
     assert.equal(o.i, 0);
   });
 
-  it('supports add and sub', function() {
-    o.add();
-    o.add();
-    o.sub();
-    assert.equal(o.i, 1);
-  });
-
-  it('supports chaining', function() {
-    o.add().add().add();
-
-    assert.equal(o.i, 3);
+  it('supports async chaining', function(done) {
+    o.add(3).add(2).add(function() {
+      assert.equal(o.i, 6);
+      done(null);
+    });
   });
 
 });
