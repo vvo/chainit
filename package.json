@@ -10,8 +10,8 @@
   "scripts": {
     "test": "mocha"
   },
-  "author": "",
-  "license": "BSD-2-Clause",
+  "author": "Vincent Voyer <vincent@zeroload.net>",
+  "license": "MIT/X11",
   "devDependencies": {
     "mocha": "~1.13.0"
   },
