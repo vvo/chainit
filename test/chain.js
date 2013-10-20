@@ -33,4 +33,35 @@ describe('chaining an Api', function() {
         done(null);
       });
   });
+
+  it('supports nested calls', function(done) {
+    o
+      .concat('sa', function() {
+        o
+          .concat('l')
+      })
+      .concat('ut', function() {
+        assert.equal(o.s, 'salut');
+        done(null);
+      })
+  })
+
+  it('supports deeply nested calls', function(done) {
+    o
+      .concat('s', function() {
+        o
+          .concat('a')
+          .concat('l', function() {
+            o.concat('u')
+            o.concat('t')
+            o.concat(' ça ', function() {
+              o.concat('va')
+            })
+          })
+      })
+      .concat(' ?', function() {
+        assert.equal(o.s, 'salut ça va ?');
+        done(null);
+      })
+  })
 });

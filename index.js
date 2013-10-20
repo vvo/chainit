@@ -6,6 +6,7 @@ function chainit(Constructor) {
     timeout: 0,
     concurrency: 1
   });
+  var curIdx = 0;
 
   var methods = Object.keys(Constructor.prototype);
   methods.forEach(function(name) {
@@ -20,23 +21,24 @@ function chainit(Constructor) {
         customCb = args.pop();
       }
 
-      q.push(function(cb) {
-        if (customCb) {
-          args.push(function() {
+      var task = function(cb) {
+        args.push(function() {
+          curIdx = q.indexOf(task);
+          if (customCb) {
             customCb();
-            cb();
-          })
-        } else {
-          args.push(cb);
-        }
+          }
+          cb();
+        });
 
         original.apply(self, args);
-      });
+      }
+
+      q.splice(curIdx + 1, 0, task);
+      curIdx += 1;
 
       return this;
     }
 
-    chained.name = fName;
     Constructor.prototype[name] = chained;
   });
 
