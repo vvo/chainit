@@ -82,4 +82,23 @@ describe('chaining an Api', function() {
         })
       })
   })
+
+  it('supports nextTicked calls', function(done) {
+    o
+      .concat('ne', function() {
+        process.nextTick(function() {
+          o.concat('xt', function() {
+            process.nextTick(function() {
+              process.nextTick(function() {
+                o.concat('Tick', function() {
+                  assert.equal(this.s, 'nextTick');
+                  done(null);
+                })
+              })
+            })
+          })
+        })
+      })
+  })
+
 });
