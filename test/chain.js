@@ -2,16 +2,12 @@ describe('chaining an Api', function() {
   var assert = require('assert');
   var Api = require('./fixtures/api.js');
   var chainit = require('../index.js');
+  var ChainApi = chainit(Api);
   var o;
 
-  before(function() {
-    var ChainApi = chainit(Api);
+  beforeEach(function() {
     o = new ChainApi;
   });
-
-  beforeEach(function() {
-    o.s = '';
-  })
 
   it('has an s prop', function() {
     assert.equal(o.s, '');
@@ -62,6 +58,17 @@ describe('chaining an Api', function() {
       .concat(' ?', function() {
         assert.equal(o.s, 'salut ça va ?');
         done(null);
+      })
+  })
+
+  it('propagates context to callbacks', function(done) {
+    o
+      .concat('con', function() {
+        this
+          .concat('text', function() {
+            assert.equal(this.s, 'context');
+            done(null);
+          });
       })
   })
 });

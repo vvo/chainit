@@ -14,7 +14,7 @@ function chainit(Constructor) {
     var fName = Constructor.prototype[name].name || name;
 
     var chained = function() {
-      var self = this;
+      var ctx = this;
       var args = Array.prototype.slice.call(arguments);
       var customCb;
       if (typeof args[args.length - 1] === 'function') {
@@ -25,12 +25,12 @@ function chainit(Constructor) {
         args.push(function() {
           curIdx = q.indexOf(task);
           if (customCb) {
-            customCb();
+            customCb.apply(ctx);
           }
           cb();
         });
 
-        original.apply(self, args);
+        original.apply(ctx, args);
       }
 
       q.splice(curIdx + 1, 0, task);
