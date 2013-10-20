@@ -25,7 +25,7 @@ function chainit(Constructor) {
         args.push(function() {
           curIdx = q.indexOf(task);
           if (customCb) {
-            customCb.apply(ctx);
+            customCb.apply(ctx, arguments);
           }
           cb();
         });

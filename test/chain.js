@@ -71,4 +71,15 @@ describe('chaining an Api', function() {
           });
       })
   })
+
+  it('propagates callback arguments', function(done) {
+    o
+      .concat('er')
+      .concat('ror', function() {
+        this.getError('some text error', function(err) {
+          assert.equal(err.message, 'some text error');
+          done(null);
+        })
+      })
+  })
 });
