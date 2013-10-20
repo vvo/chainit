@@ -10,12 +10,22 @@
   "scripts": {
     "test": "mocha"
   },
-  "author": "",
-  "license": "BSD-2-Clause",
+  "author": "Vincent Voyer <vincent@zeroload.net>",
+  "license": "MIT/X11",
   "devDependencies": {
     "mocha": "~1.13.0"
   },
   "dependencies": {
     "queue": "~1.0.1"
-  }
+  },
+  "keywords": [
+    "chain",
+    "async",
+    "queue",
+    "flow control",
+    "chainable",
+    "chainify",
+    "chainit",
+    "chain api"
+  ]
 }
