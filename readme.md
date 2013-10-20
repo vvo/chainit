@@ -39,6 +39,7 @@ obj
 ```
 
 Call order:
+
 1. method1
 2. method2
 3. method1
