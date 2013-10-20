@@ -1,17 +1,13 @@
 module.exports = Api;
 
 function Api() {
-  this.i = 0;
+  this.s = '';
 }
 
-Api.prototype.add = function add(n, cb) {
-  if (typeof n === 'function') {
-    cb = n;
-    n = 1;
-  }
+Api.prototype.concat = function concat(sub, cb) {
 
   process.nextTick(function() {
-    this.i += n;
+    this.s = this.s.concat(sub);
     cb(null);
   }.bind(this));
 }

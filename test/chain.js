@@ -10,18 +10,27 @@ describe('chaining an Api', function() {
   });
 
   beforeEach(function() {
-    o.i = 0;
+    o.s = '';
   })
 
-  it('has an i prop', function() {
-    assert.equal(o.i, 0);
+  it('has an s prop', function() {
+    assert.equal(o.s, '');
   });
 
-  it('supports async chaining', function(done) {
-    o.add(3).add(2).add(function() {
-      assert.equal(o.i, 6);
+  it('supports individuals calls', function(done) {
+    o.concat('he');
+    o.concat('llo', function() {
+      assert.equal(o.s, 'hello');
       done(null);
     });
   });
 
+  it('supports chained calls', function(done) {
+    o
+      .concat('ho')
+      .concat('la', function() {
+        assert.equal(o.s, 'hola');
+        done(null);
+      });
+  });
 });
