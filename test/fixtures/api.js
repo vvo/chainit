@@ -16,3 +16,11 @@ Api.prototype.getError = function getError(text, cb) {
     cb(new Error(text));
   }.bind(this));
 }
+
+Api.prototype.tripleConcat = function callConcat(sub, cb) {
+  this.concat(sub, function() {
+    this.concat(sub, function() {
+      this.concat(sub, cb);
+    })
+  });
+}

@@ -7,12 +7,17 @@ function chainit(Constructor) {
     concurrency: 1
   });
   var curIdx = 0;
+  var parent;
 
   var methods = Object.keys(Constructor.prototype);
   methods.forEach(function(name) {
     var original = Constructor.prototype[name];
 
     var chained = function() {
+      if (parent === true) {
+        q.pending -= 1;
+      }
+
       var ctx = this;
       var args = Array.prototype.slice.call(arguments);
       var customCb;
@@ -21,7 +26,9 @@ function chainit(Constructor) {
       }
 
       var task = function(cb) {
+        parent = true;
         args.push(function() {
+          parent = false;
           curIdx = q.indexOf(task);
           if (customCb) {
             customCb.apply(ctx, arguments);

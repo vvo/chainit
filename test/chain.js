@@ -99,6 +99,14 @@ describe('chaining an Api', function() {
           })
         })
       })
-  })
+  });
+
+  it('supports methods calling methods', function(done) {
+    o
+      .tripleConcat('ok', function() {
+        assert(o.s, 'okokok');
+        done();
+      });
+  });
 
 });
