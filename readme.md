@@ -1,3 +1,5 @@
+[![browser support](https://ci.testling.com/vvo/chainit.png)](https://ci.testling.com/vvo/chainit)
+
 # chainit
 
 Turn an asynchronous JavaScript api into an asynchronous
