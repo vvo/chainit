@@ -41,6 +41,7 @@ Features:
 * preserve cb(args)
 * supports process.nextTick(cb)
 * supports setTimeout(cb)
+* fully tested! `npm test`
 
 ## examples
 
