@@ -99,6 +99,83 @@ describe('chaining an Api', function() {
           })
         })
       })
+  });
+
+  it('supports methods calling methods', function(done) {
+    o
+      .tripleConcat('one', function() {
+        this.tripleConcat('two');
+      })
+      .tripleConcat('four', function() {
+        assert.equal(o.s, 'one1-one2-one3-two1-two2-two3-four1-four2-four3-');
+        done();
+      });
+  });
+
+ it('supports nested and subsequent calls', function(done) {
+    o
+      .concat('s')
+      .call(function() {
+        o
+          .concat('a', function() {
+            o.concat('l')
+            .call(function() {
+              o.concat('u', function() {
+                o.call(function() {
+                  o.call(function() {
+                    o.concat('t')
+                  })
+                })
+              })
+              .concat(' ')
+            })
+            .concat('ç')
+          })
+          .concat('a')
+      })
+      .concat('', function() {
+        o
+          .call(function() {})
+          .concat(' v', function() {
+            o.call(function() {
+              o.concat('a');
+            }).concat(' ?').concat('?', function() {
+              assert.equal(o.s, 'salut ça va ??');
+              done();
+            })
+        })
+      })
+  });
+
+
+  it('support crazy own chains', function(done) {
+    o.multiConcat('multi', function() {
+      assert.equal(o.s, 'a-b-c-d-e-f-g-h-i-j-k-l-m-n-o-p-q-')
+      done();
+    })
+  })
+
+  it('supports outside nextTick', function(done) {
+    o.concat('one');
+    process.nextTick(function() {
+      o.concat('two').concat('three', function() {
+        assert.equal(this.s, 'onetwothree')
+        done();
+      })
+    })
+  })
+
+  it('supports functions', function(done) {
+    o.concat('one', named);
+
+    function named() {
+      o
+        .tripleConcat('two')
+        .tripleConcat('three', function() {
+          assert.equal(this.s, 'onetwo1-two2-two3-three1-three2-three3-')
+          done();
+        })
+    }
   })
 
 });
