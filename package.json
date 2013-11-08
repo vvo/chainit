@@ -27,5 +27,18 @@
     "chainify",
     "chainit",
     "chain api"
-  ]
+  ],
+  "testling": {
+    "browsers": [
+      "ie9",
+      "ie10",
+      "ie11",
+      "firefox/latest",
+      "firefox/nightly",
+      "chrome/latest",
+      "chrome/canary"
+    ],
+    "harness": "mocha",
+    "files": "test/*.js"
+  }
 }
