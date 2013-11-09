@@ -28,6 +28,10 @@
     "chainit",
     "chain api"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/vvo/chainit.git"
+  },
   "testling": {
     "browsers": [
       "ie9",
