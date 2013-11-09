@@ -16,7 +16,7 @@
     "mocha": "~1.14.0"
   },
   "dependencies": {
-    "queue": "~1.0.1"
+    "queue": "git+ssh://git@github.com:vvo/queue.git#use-defineProperty"
   },
   "keywords": [
     "chain",
