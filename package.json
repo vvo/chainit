@@ -4,16 +4,16 @@
   "description": "Turn an asynchronous JavaScript api into an asynchronous chainable JavaScript api.",
   "main": "index.js",
   "directories": {
-    "example": "examples",
-    "test": "test"
+    "example": "examples"
   },
   "scripts": {
-    "test": "mocha"
+    "test": "zuul -- test/chain.js"
   },
   "author": "Vincent Voyer <vincent@zeroload.net>",
   "license": "MIT/X11",
   "devDependencies": {
-    "mocha": "~1.14.0"
+    "mocha": "~1.14.0",
+    "zuul": "~1.0.2"
   },
   "dependencies": {
     "queue": "git://github.com/vvo/queue.git#use-defineProperty"
@@ -31,17 +31,5 @@
   "repository": {
     "type": "git",
     "url": "git://github.com/vvo/chainit.git"
-  },
-  "testling": {
-    "browsers": [
-      "ie9",
-      "ie10",
-      "firefox/latest",
-      "firefox/nightly",
-      "chrome/latest",
-      "chrome/canary"
-    ],
-    "harness": "mocha",
-    "files": "test/*.js"
   }
 }
