@@ -1,4 +1,3 @@
-[![browser support](https://ci.testling.com/vvo/chainit.png)](https://ci.testling.com/vvo/chainit)
 [![Build Status](https://travis-ci.org/vvo/chainit.png)](https://travis-ci.org/vvo/chainit)
 
 # chainit
