@@ -16,7 +16,7 @@
     "zuul": "~1.0.2"
   },
   "dependencies": {
-    "queue": "git://github.com/vvo/queue.git#use-defineProperty"
+    "queue": "~1.0.2"
   },
   "keywords": [
     "chain",
