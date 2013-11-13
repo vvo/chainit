@@ -1,7 +1,7 @@
 module.exports = Api;
 
-function Api() {
-  this.s = '';
+function Api(s) {
+  this.s = s || '';
 }
 
 Api.prototype.concat = function concat(sub, cb) {

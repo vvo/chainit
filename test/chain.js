@@ -274,7 +274,15 @@ describe('chaining an Api', function() {
     });
   });
 
-  it.only('supports adding new methods', function() {
+  it('supports constructor arguments', function(done) {
+    var o2 = new ChainApi('allo');
+    o2.concat(' maman', function() {
+      assert.equal(this.s, 'allo maman');
+      done();
+    })
+  });
+
+  xit('supports adding new methods', function() {
 
   });
 

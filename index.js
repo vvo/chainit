@@ -7,7 +7,7 @@ function chainit(Constructor) {
   var Chain = function Chain() {
     instances.push(this);
     fns[instances.indexOf(this)] = {};
-    Constructor.call(this);
+    Constructor.apply(this, arguments);
   };
 
   Chain.prototype = Object.create(Constructor.prototype);
