@@ -1,6 +1,17 @@
 module.exports = chainit;
 
 function chainit(Constructor) {
+  var instances = [];
+  var fns = [];
+
+  var Chain = function Chain() {
+    instances.push(this);
+    fns[instances.indexOf(this)] = {};
+    Constructor.call(this);
+  };
+
+  Chain.prototype = Object.create(Constructor.prototype);
+
   var Queue = require('queue');
   var queues = [];
   var currentDepth = 0;
@@ -45,49 +56,78 @@ function chainit(Constructor) {
     return queue;
   }
 
+  var statics = Object.keys(Constructor).forEach(function(name) {
+    Chain[name] = new Function(Constructor[name]);
+  });
+
   var methods = Object.keys(Constructor.prototype);
   methods.forEach(function(name) {
     var original = Constructor.prototype[name];
 
-    var chained = function() {
-      var ctx = this;
-      var args = Array.prototype.slice.call(arguments);
-      var customCb;
-      if (typeof args[args.length - 1] === 'function') {
-        customCb = args.pop();
-      }
+    var chained = makeChain();
 
-      var ldepth = currentDepth;
+    function makeChain(fn) {
+
+      return function chained() {
+        var ctx = this;
+        var args = Array.prototype.slice.call(arguments);
+        var customCb;
+        if (typeof args[args.length - 1] === 'function') {
+          customCb = args.pop();
+        }
+
+        var ldepth = currentDepth;
 
 
-      if (currentDepth > 0 && queues[currentDepth - 1].concurrency > 0) {
-        queues[currentDepth - 1].concurrency = 0;
-      }
+        if (currentDepth > 0 && queues[currentDepth - 1].concurrency > 0) {
+          queues[currentDepth - 1].concurrency = 0;
+        }
 
-      var task = function(cb) {
-        currentDepth = ldepth + 1;
+        var task = function(cb) {
+          currentDepth = ldepth + 1;
 
-        args.push(function() {
-          var cbArgs = arguments;
+          args.push(function() {
+            var cbArgs = arguments;
 
-          if (customCb) {
-            customCb.apply(ctx, cbArgs);
+            if (customCb) {
+              customCb.apply(ctx, cbArgs);
+            }
+
+            cb();
+          });
+
+          if (typeof fn === 'function') {
+            fn.apply(ctx, args);
+          } else {
+            original.apply(ctx, args);
           }
+        }
 
-          cb();
-        });
-
-        original.apply(ctx, args);
+        pushTo(currentDepth, task);
+        return this;
       }
-
-      pushTo(currentDepth, task);
-      return this;
     }
 
-    Constructor.prototype[name] = chained;
+    Object.defineProperty(Chain.prototype, name, {
+      set: function(func) {
+        if (this === Chain.prototype) {
+          original = func;
+        } else {
+          fns[instances.indexOf(this)][name] = makeChain(func);
+        }
+      },
+      get: function() {
+        if (this === Chain.prototype || !fns[instances.indexOf(this)][name]) {
+          return chained;
+        } else {
+          return fns[instances.indexOf(this)][name];
+        }
+      }
+    });
+
   });
 
-  return Constructor;
+  return Chain;
 }
 
 function hasPending(queue) {

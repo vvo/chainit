@@ -56,6 +56,8 @@ Api.prototype.multiConcat = function(prefix, cb) {
     });
 }
 
+Api.getRandomArbitrary = getRandomArbitrary;
+
 function getRandomArbitrary(min, max) {
   return Math.random() * (max - min) + min;
 }
