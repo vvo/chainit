@@ -1,0 +1,21 @@
+{
+  "asi": true,
+  "sub": true,
+  "boss": true,
+  "shadow": true,
+  "strict": false,
+  "debug": false,
+  "undef": true,
+  "unused": "vars",
+  "trailing": true,
+  "node": true,
+  "predef": [
+    "describe",
+    "after",
+    "afterEach",
+    "before",
+    "beforeEach",
+    "describes",
+    "it"
+  ]
+}
