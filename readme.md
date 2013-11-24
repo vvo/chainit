@@ -1,5 +1,7 @@
 [![Build Status](https://travis-ci.org/vvo/chainit.png)](https://travis-ci.org/vvo/chainit)
 
+[![Selenium Test Status](https://saucelabs.com/browser-matrix/chainitvvo.svg)](https://saucelabs.com/u/chainitvvo)
+
 # chainit
 
 Turn an asynchronous JavaScript api into an asynchronous
