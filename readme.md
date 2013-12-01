@@ -26,17 +26,13 @@ obj
   .method2();                     // 5th call
 ```
 
-## Overriding methods
+## Adding or overriding methods
 
-You can override methods:
-* at the `.prototype` level
-* at the instance level
+Adding and overriding methods works at both prototype level and instance level.
 
-And still benefits from the chain.
-
-You can also keep references to the original methods to set them back later.
-This is possible because we do not touch the
-`MyApi` original `constructor` nor `prototype`.
+You must use `chainit.add(chain, methodName, method)`,
+you can't do direct assignation (`chain.methodName = method`) because
+`object.observe` is not yet ready.
 
 ```js
 function MyApi() {}
@@ -47,7 +43,10 @@ var chainit = require('chainit');
 var MyChainApi = chainit(MyApi);
 var original1 = MyChainApi.prototype.method1;
 
-MyChainApi.prototype.method1 = function(cb) {cb()}
+// override instance method
+chainit.add(MyChainApi, 'method1', function(cb) {
+  cb()
+});
 
 var obj = new MyChainApi();
 
@@ -55,21 +54,13 @@ obj
   .method1() // calls the newly added method1
   .method2();
 
-MyChainApi.prototype.method1 = original1;
+// revert original method
+chainit.add(MyChainApi, 'method1', original1);
 
-obj
-  .method1() // calls the original method
-  .method2();
-
-original1 = obj.method1;
-
-obj.method1 = function(cb) {cb()}
-
-obj
-  .method1() // calls the newly added method1
-  .method2();
-
-obj.method1 = original1;
+// override prototype method
+chainit.add(MyChainApi.prototype, 'method1', function(cb) {
+  cb()
+});
 ```
 
 ## features
@@ -84,11 +75,8 @@ Features:
 * supports process.nextTick(cb)
 * supports setTimeout(cb)
 * supports methods redifinition
-* fully tested! `npm test`
-
-## examples
-
-See [examples](examples/).
+* supports adding new methods
+* fully tested! local: `npm install -g mocha && mocha`, saucelabs: `npm test`
 
 ## tests
 
@@ -98,7 +86,11 @@ See [tests](test/).
 npm test
 ```
 
-## async/sync apis
+## examples
+
+See [examples](examples/).
+
+## mixing async/sync apis
 
 There is no easy way to mix sync/async chainable
 apis because there is no way to differenciate sync/async calls.
@@ -122,10 +114,9 @@ adding `chainit.sync(Constructor)`.
 
 ## credits
 
-This module was done easily thanks to
-[jessetane/queue](https://github.com/jessetane/queue).
+This module is using [jessetane/queue](https://github.com/jessetane/queue).
 
-A chainable api is just queueing methods and reordering calls.
+A chainable api is queueing methods and reordering calls, so we use a queue.
 
 This module was built to replace the chainable api from
-[webdriverjs](https://github.com/camme/webdriverjs/tree/v0.8.0).
+[webdriverjs](https://github.com/camme/webdriverjs).

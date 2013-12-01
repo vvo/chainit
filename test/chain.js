@@ -215,10 +215,10 @@ describe('chaining an Api', function() {
 
     var original = Api.prototype.concat;
 
-    ChainApi.prototype.concat = function concat(sub, cb) {
+    chainit.add(ChainApi.prototype, 'concat', function concat(sub, cb) {
       this.s = this.s.concat(sub + '#');
       setTimeout(cb, ChainApi.getRandomArbitrary(5, 20));
-    }
+    });
 
     o2.concat('re');
 
@@ -228,14 +228,14 @@ describe('chaining an Api', function() {
     })
     .concat('nition', function() {
       assert.equal(this.s, 're#de#fi1-#fi2-#fi3-#nition#');
-      ChainApi.prototype.concat = original;
+      chainit.add(ChainApi.prototype, 'concat', original);
       o.concat('BOUH-', function() {
-        ChainApi.prototype.concat = function (sub, cb) {
+        chainit.add(ChainApi.prototype, 'concat', function concat(sub, cb) {
           this.s = this.s.concat(sub + '!!');
           setTimeout(cb, ChainApi.getRandomArbitrary(5, 20));
-        };
+        });
         o.concat('hello', function() {
-          ChainApi.prototype.concat = Api.prototype.concat;
+          chainit.add(ChainApi.prototype, 'concat', Api.prototype.concat);
           o.concat('-ah', function() {
             o2.concat('def', function() {
               assert.equal(this.s, 're#def');
@@ -252,10 +252,10 @@ describe('chaining an Api', function() {
     var o2 = new ChainApi();
     var original = o.concat;
 
-    o.concat = function(sub, cb) {
+    chainit.add(o, 'concat', function concat(sub, cb) {
       this.s += sub + '#'
       setTimeout(cb, ChainApi.getRandomArbitrary(5, 20));
-    }
+    });
 
     o
       .concat('one')
@@ -265,7 +265,7 @@ describe('chaining an Api', function() {
       .tripleConcat('four');
 
     o2.concat('hey').concat('ho', function() {
-      o.concat = original;
+      chainit.add(o, 'concat',original);
       o.concat('YO!', function() {
         assert.equal(this.s, 'one#two#three#four1-#four2-#four3-#YO!');
         assert.equal(o2.s, 'heyho');
@@ -282,8 +282,24 @@ describe('chaining an Api', function() {
     })
   });
 
-  xit('supports adding new methods', function() {
+  it('supports adding new methods', function(done) {
+    function newMethod(sub, cb) {
+      this.s += sub + 'NEW!-'
+      setTimeout(cb, ChainApi.getRandomArbitrary(5, 20));
+    }
 
+    assert.equal(typeof o.newMethod, 'undefined');
+    chainit.add(o, 'newMethod', newMethod);
+    assert.equal(typeof o.newMethod, 'function');
+
+    o
+      .newMethod('thiis')
+      .newMethod('amazing', function() {
+        this.concat('allo', function() {
+          assert.equal(this.s, 'thiisNEW!-amazingNEW!-allo');
+          done()
+        })
+      })
   });
 
 });

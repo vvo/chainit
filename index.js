@@ -1,14 +1,10 @@
 module.exports = chainit;
 
 function chainit(Constructor) {
-  var instances = [];
-  var fns = [];
 
-  var Chain = function Chain() {
-    instances.push(this);
-    fns[instances.indexOf(this)] = {};
+  function Chain() {
     Constructor.apply(this, arguments);
-  };
+  }
 
   Chain.prototype = Object.create(Constructor.prototype);
 
@@ -56,78 +52,66 @@ function chainit(Constructor) {
     return queue;
   }
 
-  var statics = Object.keys(Constructor).forEach(function(name) {
-    Chain[name] = new Function(Constructor[name]);
-  });
-
-  var methods = Object.keys(Constructor.prototype);
-  methods.forEach(function(name) {
-    var original = Constructor.prototype[name];
-
-    var chained = makeChain();
-
-    function makeChain(fn) {
-
-      return function chained() {
-        var ctx = this;
-        var args = Array.prototype.slice.call(arguments);
-        var customCb;
-        if (typeof args[args.length - 1] === 'function') {
-          customCb = args.pop();
-        }
-
-        var ldepth = currentDepth;
-
-
-        if (currentDepth > 0 && queues[currentDepth - 1].concurrency > 0) {
-          queues[currentDepth - 1].concurrency = 0;
-        }
-
-        var task = function(cb) {
-          currentDepth = ldepth + 1;
-
-          args.push(function() {
-            var cbArgs = arguments;
-
-            if (customCb) {
-              customCb.apply(ctx, cbArgs);
-            }
-
-            cb();
-          });
-
-          if (typeof fn === 'function') {
-            fn.apply(ctx, args);
-          } else {
-            original.apply(ctx, args);
-          }
-        }
-
-        pushTo(currentDepth, task);
-        return this;
-      }
-    }
-
-    Object.defineProperty(Chain.prototype, name, {
-      set: function(func) {
-        if (this === Chain.prototype) {
-          original = func;
-        } else {
-          fns[instances.indexOf(this)][name] = makeChain(func);
-        }
-      },
-      get: function() {
-        if (this === Chain.prototype || !fns[instances.indexOf(this)][name]) {
-          return chained;
-        } else {
-          return fns[instances.indexOf(this)][name];
-        }
-      }
+  // static methods, not chained
+  Object.keys(Constructor)
+    .forEach(function(name) {
+      Chain[name] = new Function(Constructor[name]);
     });
 
-  });
+  // prototype methods, chained
+  Object
+    .keys(Constructor.prototype)
+    .forEach(function(fnName) {
+      Chain.prototype[fnName] = makeChain(fnName, Constructor.prototype[fnName]);
+    });
+
+  function makeChain(fnName, fn) {
+
+    return function chained() {
+      var ctx = this;
+      var args = Array.prototype.slice.call(arguments);
+      var customCb;
+      if (typeof args[args.length - 1] === 'function') {
+        customCb = args.pop();
+      }
+
+      var ldepth = currentDepth;
+
+
+      if (currentDepth > 0 && queues[currentDepth - 1].concurrency > 0) {
+        queues[currentDepth - 1].concurrency = 0;
+      }
+
+      var task = function(cb) {
+        currentDepth = ldepth + 1;
+
+        args.push(function() {
+          var cbArgs = arguments;
+
+          if (customCb) {
+            customCb.apply(ctx, cbArgs);
+          }
+
+          cb();
+        });
+
+        fn.apply(ctx, args);
+      }
+
+      pushTo(currentDepth, task);
+      return this;
+    }
+  }
+
+  Chain.prototype.__addToChain = function(fnName, fn) {
+    this[fnName] = makeChain(fnName, fn);
+  }
 
   return Chain;
+}
+
+chainit.add = function add(to, fnName, fn) {
+  to.__addToChain(fnName, fn);
 }
 
 function hasPending(queue) {
