@@ -54,7 +54,7 @@ obj
   .method2();
 
 // revert original method
-chainit.add(MyChainApi, 'method1', MyApi.prototype.method1);
+chainit.add(obj, 'method1', MyApi.prototype.method1);
 
 // override prototype method
 chainit.add(MyChainApi, 'method1', function(cb) {
