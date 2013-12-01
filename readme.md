@@ -41,26 +41,29 @@ MyApi.prototype.method2 = function(cb) {cb()}
 
 var chainit = require('chainit');
 var MyChainApi = chainit(MyApi);
-var original1 = MyChainApi.prototype.method1;
-
-// override instance method
-chainit.add(MyChainApi, 'method1', function(cb) {
-  cb()
-});
 
 var obj = new MyChainApi();
+
+// override instance method
+chainit.add(obj, 'method1', function(cb) {
+  cb()
+});
 
 obj
   .method1() // calls the newly added method1
   .method2();
 
 // revert original method
-chainit.add(MyChainApi, 'method1', original1);
+chainit.add(MyChainApi, 'method1', MyApi.prototype.method1);
 
 // override prototype method
-chainit.add(MyChainApi.prototype, 'method1', function(cb) {
+chainit.add(MyChainApi, 'method1', function(cb) {
   cb()
 });
+
+var obj2 = new MyChainApi();
+
+obj2.method1(); // calls the newly chained prototype `method1`
 ```
 
 ## features

@@ -111,7 +111,11 @@ function chainit(Constructor) {
 }
 
 chainit.add = function add(to, fnName, fn) {
-  to.__addToChain(fnName, fn);
+  if (to.prototype && to.prototype.__addToChain) {
+    to.prototype.__addToChain(fnName, fn);
+  } else {
+    to.__addToChain(fnName, fn);
+  }
 }
 
 function hasPending(queue) {

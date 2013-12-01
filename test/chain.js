@@ -215,7 +215,7 @@ describe('chaining an Api', function() {
 
     var original = Api.prototype.concat;
 
-    chainit.add(ChainApi.prototype, 'concat', function concat(sub, cb) {
+    chainit.add(ChainApi, 'concat', function concat(sub, cb) {
       this.s = this.s.concat(sub + '#');
       setTimeout(cb, ChainApi.getRandomArbitrary(5, 20));
     });
@@ -228,14 +228,14 @@ describe('chaining an Api', function() {
     })
     .concat('nition', function() {
       assert.equal(this.s, 're#de#fi1-#fi2-#fi3-#nition#');
-      chainit.add(ChainApi.prototype, 'concat', original);
+      chainit.add(ChainApi, 'concat', original);
       o.concat('BOUH-', function() {
-        chainit.add(ChainApi.prototype, 'concat', function concat(sub, cb) {
+        chainit.add(ChainApi, 'concat', function concat(sub, cb) {
           this.s = this.s.concat(sub + '!!');
           setTimeout(cb, ChainApi.getRandomArbitrary(5, 20));
         });
         o.concat('hello', function() {
-          chainit.add(ChainApi.prototype, 'concat', Api.prototype.concat);
+          chainit.add(ChainApi, 'concat', Api.prototype.concat);
           o.concat('-ah', function() {
             o2.concat('def', function() {
               assert.equal(this.s, 're#def');
