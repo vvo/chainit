@@ -5,8 +5,16 @@ function Api(s) {
 }
 
 Api.prototype.concat = function concat(sub, cb) {
-    this.s = this.s.concat(sub);
-    setTimeout(cb, getRandomArbitrary(4, 30));
+  this.s = this.s.concat(sub);
+  setTimeout(cb, getRandomArbitrary(4, 30));
+}
+
+Api.prototype.slowConcat = function concat(sub, cb) {
+  var api = this;
+  setTimeout(function() {
+    api.s = api.s.concat(sub);
+    cb();
+  }, getRandomArbitrary(100, 200));
 }
 
 Api.prototype.getError = function getError(text, cb) {

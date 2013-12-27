@@ -2,11 +2,74 @@ describe('chaining an Api', function() {
   var assert = require('assert');
   var Api = require('./fixtures/api.js');
   var chainit = require('../index.js');
-  var ChainApi = chainit(Api);
+  var ChainApi;
   var o;
 
   beforeEach(function() {
+    ChainApi = chainit(Api);
     o = new ChainApi();
+  });
+
+  // theses tests relates to task push() flushingF
+  describe('before calls', function() {
+    var ChainApi = chainit(Api);
+    var b = new ChainApi();
+
+    before(function() {
+      b.slowConcat('cou0').slowConcat('cou1');
+    });
+
+    it('are supported', function(done) {
+      b.concat('bouh0').concat('bouh1', function() {
+        assert.equal(b.s, 'cou0cou1bouh0bouh1')
+        done();
+      })
+    });
+  });
+
+  describe('mocha without before', function() {
+    var ChainApi = chainit(Api);
+    var b = new ChainApi();
+
+    b.slowConcat('cou0').slowConcat('cou1');
+
+    it('supports it', function(done) {
+      b.concat('bouh0').concat('bouh1', function() {
+        assert.equal(b.s, 'cou0cou1bouh0bouh1')
+        done();
+      })
+    });
+  });
+
+  describe('nexticks, timeout', function () {
+    it('works with after nexttick', function(done) {
+      o.slowConcat('cou0').slowConcat('cou1');
+
+      process.nextTick(function(){
+        o.concat('bouh0', function() {
+          assert.equal('cou0cou1bouh0', o.s);
+          done();
+        });
+      });
+    });
+
+    it('works with double nexttick', function(done) {
+      o.slowConcat('cou0');
+
+      process.nextTick(function(){
+        o.slowConcat('cou1').concat('cou2');
+      });
+
+      process.nextTick(function(){
+        o
+          .concat('bouh1')
+          .slowConcat('bouh2', function() {
+            assert.equal('cou0cou1cou2bouh1bouh2', o.s);
+            done();
+          });
+      });
+
+    });
   });
 
   it('has an s prop', function() {

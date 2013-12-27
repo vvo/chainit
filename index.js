@@ -11,10 +11,32 @@ function chainit(Constructor) {
   var Queue = require('queue');
   var queues = [];
   var currentDepth = 0;
+  var flushTimeout;
+  var flushedTasks = [];
 
   function pushTo(depth, task) {
     var queue = queues[depth] || (queues[depth] = getNewQueue(depth));
-    queue.push(task);
+
+    if (depth > 0) {
+      return queue.push(task);
+    }
+
+    // hack to handle cases where first chained calls
+    // are not added synchronously
+    // it means first chain start will occur after 4ms max
+    clearTimeout(flushTimeout);
+    flushedTasks.unshift(function() {
+      queue.push(task);
+    });
+
+    flushTimeout = setTimeout(flush, 4);
+  }
+
+  function flush() {
+    var addTask;
+    while (addTask = flushedTasks.pop()) {
+      addTask();
+    }
   }
 
   function getNewQueue(newDepth) {
