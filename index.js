@@ -77,30 +77,28 @@ function chainit(Constructor) {
 
       var ldepth = currentDepth;
 
+
       if (currentDepth > 0 && queues[currentDepth - 1].concurrency > 0) {
         queues[currentDepth - 1].concurrency = 0;
       }
 
       var task = function(cb) {
-        setTimeout(function() {
-          currentDepth = ldepth + 1;
+        currentDepth = ldepth + 1;
 
-          args.push(function() {
-            var cbArgs = arguments;
+        args.push(function() {
+          var cbArgs = arguments;
 
-            if (customCb) {
-              customCb.apply(ctx, cbArgs);
-            }
+          if (customCb) {
+            customCb.apply(ctx, cbArgs);
+          }
 
-            cb();
-          });
+          cb();
+        });
 
-          fn.apply(ctx, args);
-        }, 0);
+        fn.apply(ctx, args);
       }
 
       pushTo(currentDepth, task);
-
       return this;
     }
   }
