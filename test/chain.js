@@ -9,6 +9,54 @@ describe('chaining an Api', function() {
     o = new ChainApi();
   });
 
+  describe('before use', function() {
+    var b = new ChainApi();
+
+    before(function() {
+      b.slowConcat('cou0').slowConcat('cou1');
+    })
+
+    it('supports it', function(done) {
+      b.concat('bouh0').concat('bouh1', function() {
+        assert.equal(b.s, 'cou0cou1bouh0bouh1')
+        done();
+      })
+    });
+  })
+
+  describe('nexticks, timeout', function () {
+    it('works with nexti', function(done) {
+      o.slowConcat('cou0').slowConcat('cou1');
+
+      process.nextTick(function(){
+        o.concat('bouh0', function() {
+          assert.equal('cou0cou1bouh0', o.s);
+          done();
+        });
+      });
+    });
+
+    it('works with double nextick', function(done) {
+      o.slowConcat('cou0');
+
+      process.nextTick(function(){
+        o.slowConcat('cou1').concat('cou2');
+      });
+
+      process.nextTick(function(){
+        o
+          .concat('bouh1')
+          .slowConcat('bouh2', function() {
+            assert.equal('cou0cou1cou2bouh1bouh2', o.s);
+            done();
+          });
+      });
+
+    });
+  });
+
+
+
   it('has an s prop', function() {
     assert.equal(o.s, '');
   });
