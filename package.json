@@ -12,7 +12,7 @@
   "author": "Vincent Voyer <vincent@zeroload.net>",
   "license": "MIT/X11",
   "devDependencies": {
-    "mocha": "~1.14.0",
+    "mocha": "~1.16.2",
     "zuul": "~1.0.2"
   },
   "dependencies": {
