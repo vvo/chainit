@@ -25,11 +25,13 @@ function chainit(Constructor) {
     // are not added synchronously
     // it means first chain start will occur after 4ms max
     clearTimeout(flushTimeout);
-    flushedTasks.unshift(function() {
-      queue.push(task);
-    });
+    process.nextTick(function() {
+      flushedTasks.unshift(function() {
+        queue.push(task);
+      });
 
-    flushTimeout = setTimeout(flush, 4);
+      flushTimeout = setTimeout(flush, 4);
+    });
   }
 
   function flush() {
@@ -93,18 +95,19 @@ function chainit(Constructor) {
       var ctx = this;
       var args = Array.prototype.slice.call(arguments);
       var customCb;
+
       if (typeof args[args.length - 1] === 'function') {
         customCb = args.pop();
       }
 
       var ldepth = currentDepth;
 
-
       if (currentDepth > 0 && queues[currentDepth - 1].concurrency > 0) {
         queues[currentDepth - 1].concurrency = 0;
       }
 
       var task = function(cb) {
+      process.nextTick(function() {
         currentDepth = ldepth + 1;
 
         args.push(function() {
@@ -118,9 +121,11 @@ function chainit(Constructor) {
         });
 
         fn.apply(ctx, args);
+      });
       }
 
       pushTo(currentDepth, task);
+
       return this;
     }
   }
