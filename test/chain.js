@@ -365,4 +365,27 @@ describe('chaining an Api', function() {
       })
   });
 
+  it('supports starting and stopping a queue', function(done) {
+    var hasStopped = false;
+
+    setTimeout(function() {
+      assert.equal(hasStopped,true);
+      chainit.start(o);
+      hasStopped = false;
+    },300)
+
+    o
+      .concat('1')
+      .concat('2')
+      .call(function() {
+        chainit.stop(o);
+        hasStopped = true;
+      })
+      .concat('3',function() {
+        assert.equal(this.s,'123');
+        assert.equal(hasStopped, false);
+        done();
+      })
+  });
+
 });

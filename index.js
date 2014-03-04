@@ -155,20 +155,20 @@ function chainit(Constructor) {
 
   Chain.prototype.__start = function() {
 
-    if(!queues.length && !queues[currentDepth]) {
+    if(!queues.length || !queues[currentDepth-1]) {
       return false;
     }
 
-    queues[currentDepth].start();
+    queues[currentDepth-1].start();
   }
 
   Chain.prototype.__stop = function() {
 
-    if(!queues.length && !queues[currentDepth]) {
+    if(!queues.length || !queues[currentDepth-1]) {
       return false;
     }
 
-    queues[currentDepth].stop();
+    queues[currentDepth-1].stop();
   }
 
   return Chain;
@@ -204,7 +204,7 @@ chainit.start = function start(to) {
  * stop chain
  * @param {Object}   to     Context
  */
-chainit.stop = function start(to) {
+chainit.stop = function stop(to) {
   if (to.prototype && to.prototype.__stop) {
     to.prototype.__stop();
   } else {
