@@ -1,8 +1,6 @@
-[![Build Status](https://travis-ci.org/vvo/chainit.png)](https://travis-ci.org/vvo/chainit)
+# chainit [![Build Status](https://travis-ci.org/vvo/chainit.png)](https://travis-ci.org/vvo/chainit) [![Dependency Status](https://david-dm.org/vvo/chainit.svg?theme=shields.io)](https://david-dm.org/vvo/chainit) [![devDependency Status](https://david-dm.org/vvo/chainit/dev-status.svg?theme=shields.io)](https://david-dm.org/vvo/chainit#info=devDependencies)
 
 [![Selenium Test Status](https://saucelabs.com/browser-matrix/chainitvvo.svg)](https://saucelabs.com/u/chainitvvo)
-
-# chainit
 
 Turn an asynchronous JavaScript api into an asynchronous
 [chainable](http://en.wikipedia.org/wiki/Method_chaining) JavaScript api.
