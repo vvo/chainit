@@ -14,11 +14,15 @@ function chainit(Constructor) {
   var flushTimeout;
   var flushedTasks = [];
 
+  /**
+   * push chained function into queue
+   */
   function pushTo(depth, task) {
     var queue = queues[depth] || (queues[depth] = getNewQueue(depth));
 
     if (depth > 0) {
-      return queue.push(task);
+      queue.push(task);
+      return queue.start();
     }
 
     // hack to handle cases where first chained calls
@@ -28,6 +32,7 @@ function chainit(Constructor) {
     process.nextTick(function() {
       flushedTasks.unshift(function() {
         queue.push(task);
+        queue.start();
       });
 
       flushTimeout = setTimeout(flush, 4);
@@ -41,13 +46,17 @@ function chainit(Constructor) {
     }
   }
 
+  /**
+   * initialize new queue as subqueue to API command
+   * @param  {Integer} newDepth  queue depth
+   */
   function getNewQueue(newDepth) {
     var queue = new Queue({
       timeout: 0,
       concurrency: 1
     });
 
-    queue.on('drain', function() {
+    queue.on('end', function() {
       if (newDepth > 0) {
         wakeupChain(newDepth);
       }
@@ -61,7 +70,7 @@ function chainit(Constructor) {
       if (!queues[depth + 1] ||
         !queues.slice(depth).some(hasPending)) {
         queues[depth - 1].concurrency = 1;
-        queues[depth - 1].process();
+        queues[depth - 1].start();
       }
 
       if (depth > 1) {
@@ -76,13 +85,17 @@ function chainit(Constructor) {
     return queue;
   }
 
-  // static methods, not chained
+  /**
+   * register static methods, not chained
+   */
   Object.keys(Constructor)
     .forEach(function(name) {
       Chain[name] = new Function(Constructor[name]);
     });
 
-  // prototype methods, chained
+  /**
+   * register prototype methods, chained
+   */
   Object
     .keys(Constructor.prototype)
     .forEach(function(fnName) {
@@ -102,6 +115,7 @@ function chainit(Constructor) {
 
       var ldepth = currentDepth;
 
+      // if parent queue is running, stop it and run new subquene
       if (currentDepth > 0 && queues[currentDepth - 1].concurrency > 0) {
         queues[currentDepth - 1].concurrency = 0;
       }
@@ -113,10 +127,12 @@ function chainit(Constructor) {
         args.push(function() {
           var cbArgs = arguments;
 
+          // if API provides custom async callback, execute it
           if (customCb) {
             customCb.apply(ctx, cbArgs);
           }
 
+          // call required Queue callback
           cb();
         });
 
@@ -124,8 +140,11 @@ function chainit(Constructor) {
       });
       }
 
+      // put async function into queue
       pushTo(currentDepth, task);
 
+      // return this to make API chainable
+      // like api.command1().command2()
       return this;
     }
   }
@@ -134,14 +153,62 @@ function chainit(Constructor) {
     this[fnName] = makeChain(fnName, fn);
   }
 
+  Chain.prototype.__start = function() {
+
+    if(!queues.length || !queues[currentDepth-1]) {
+      return false;
+    }
+
+    queues[currentDepth-1].start();
+  }
+
+  Chain.prototype.__stop = function() {
+
+    if(!queues.length || !queues[currentDepth-1]) {
+      return false;
+    }
+
+    queues[currentDepth-1].stop();
+  }
+
   return Chain;
 }
 
+/**
+ * add custom function into chain
+ * @param {Object}   to     Context
+ * @param {String}   fnName function name
+ * @param {Function} fn     function
+ */
 chainit.add = function add(to, fnName, fn) {
   if (to.prototype && to.prototype.__addToChain) {
     to.prototype.__addToChain(fnName, fn);
   } else {
     to.__addToChain(fnName, fn);
+  }
+}
+
+/**
+ * start chain
+ * @param {Object}   to     Context
+ */
+chainit.start = function start(to) {
+  if (to.prototype && to.prototype.__start) {
+    to.prototype.__start();
+  } else {
+    to.__start();
+  }
+}
+
+/**
+ * stop chain
+ * @param {Object}   to     Context
+ */
+chainit.stop = function stop(to) {
+  if (to.prototype && to.prototype.__stop) {
+    to.prototype.__stop();
+  } else {
+    to.__stop();
   }
 }
 
