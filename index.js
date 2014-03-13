@@ -111,9 +111,13 @@ function chainit(Constructor) {
 
     return function chained() {
       var ctx = this;
-      var callArguments = arguments;
+      var callArguments = Array.prototype.slice.call(arguments);
       var args = Array.prototype.slice.call(arguments);
       var customCb;
+
+      if (callArguments[callArguments.length - 1] instanceof Function) {
+        callArguments.pop();
+      }
 
       if (typeof args[args.length - 1] === 'function') {
         customCb = args.pop();
@@ -134,11 +138,6 @@ function chainit(Constructor) {
           var cbArgs = arguments;
 
           if (arguments[0] instanceof Error) {
-            callArguments = Array.prototype.slice.call(callArguments);
-            if (callArguments[callArguments.length - 1] instanceof Function) {
-              callArguments.pop();
-            }
-
             arguments[0].message = '[' + fnName + niceArgs(callArguments) + '] ' + arguments[0].message;
           }
 
