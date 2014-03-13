@@ -96,8 +96,13 @@ function chainit(Constructor) {
   /**
    * register prototype methods, chained
    */
-  Object
-    .keys(Constructor.prototype)
+  var allFn = Object.keys(Constructor.prototype);
+
+  if (allFn.length === 0) {
+    allFn = Object.keys(Object.getPrototypeOf(Constructor.prototype));
+  }
+
+  allFn
     .forEach(function(fnName) {
       Chain.prototype[fnName] = makeChain(fnName, Constructor.prototype[fnName]);
     });
@@ -106,6 +111,7 @@ function chainit(Constructor) {
 
     return function chained() {
       var ctx = this;
+      var callArguments = arguments;
       var args = Array.prototype.slice.call(arguments);
       var customCb;
 
@@ -126,6 +132,15 @@ function chainit(Constructor) {
 
         args.push(function() {
           var cbArgs = arguments;
+
+          if (arguments[0] instanceof Error) {
+            callArguments = Array.prototype.slice.call(callArguments);
+            if (callArguments[callArguments.length - 1] instanceof Function) {
+              callArguments.pop();
+            }
+
+            arguments[0].message = '[' + fnName + niceArgs(callArguments) + '] ' + arguments[0].message;
+          }
 
           // if API provides custom async callback, execute it
           if (customCb) {
@@ -215,3 +230,10 @@ chainit.stop = function stop(to) {
 function hasPending(queue) {
   return queue.length >= 1;
 }
+
+// c/p from https://github.com/admc/wd/blob/311c39ff2a2a3005405bc5872f420b359a5aa397/lib/utils.js#L108
+function niceArgs(args) {
+  return JSON.stringify(args)
+    .replace(/^\[/, '(')
+    .replace(/\]$/, ')');
+};

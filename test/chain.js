@@ -152,7 +152,7 @@ describe('chaining an Api', function() {
       .concat('er')
       .concat('ror', function() {
         this.getError('some text error', function(err) {
-          assert.equal(err.message, 'some text error');
+          assert.equal(err.message, '[getError("some text error")] some text error');
           done(null);
         })
       })
@@ -386,6 +386,33 @@ describe('chaining an Api', function() {
         assert.equal(hasStopped, false);
         done();
       })
+  });
+
+  describe('inherited APIS', function() {
+    var ChainedInheritedApi;
+
+    beforeEach(function() {
+      function InheritedApi() {
+        Api.call(this);
+      }
+
+      require('util').inherits(InheritedApi, Api);
+
+      ChainedInheritedApi = chainit(InheritedApi);
+    });
+
+    it('supports inherited APIS', function(done) {
+      var o = new ChainedInheritedApi();
+      o
+        .concat('1')
+        .concat('2')
+        .call(function() {
+          assert.equal(this.s, '12');
+          done();
+        })
+    });
+
+
   });
 
 });
