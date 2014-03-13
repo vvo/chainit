@@ -96,8 +96,13 @@ function chainit(Constructor) {
   /**
    * register prototype methods, chained
    */
-  Object
-    .keys(Constructor.prototype)
+  var allFn = Object.keys(Constructor.prototype);
+
+  if (allFn.length === 0) {
+    allFn = Object.keys(Object.getPrototypeOf(Constructor.prototype));
+  }
+
+  allFn
     .forEach(function(fnName) {
       Chain.prototype[fnName] = makeChain(fnName, Constructor.prototype[fnName]);
     });

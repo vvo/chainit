@@ -388,4 +388,31 @@ describe('chaining an Api', function() {
       })
   });
 
+  describe('inherited APIS', function() {
+    var ChainedInheritedApi;
+
+    beforeEach(function() {
+      function InheritedApi() {
+        Api.call(this);
+      }
+
+      require('util').inherits(InheritedApi, Api);
+
+      ChainedInheritedApi = chainit(InheritedApi);
+    });
+
+    it('supports inherited APIS', function(done) {
+      var o = new ChainedInheritedApi();
+      o
+        .concat('1')
+        .concat('2')
+        .call(function() {
+          assert.equal(this.s, '12');
+          done();
+        })
+    });
+
+
+  });
+
 });
