@@ -16,7 +16,7 @@
     "zuul": "~1.5.4"
   },
   "dependencies": {
-    "queue": "~2.2.0"
+    "queue": "~1.0.2"
   },
   "keywords": [
     "chain",
