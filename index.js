@@ -124,7 +124,8 @@ function chainit(Constructor) {
           var cbArgs = arguments;
 
           if (arguments[0] instanceof Error) {
-            arguments[0].message = '[' + fnName + niceArgs(callArguments) + '] ' + arguments[0].message;
+
+            arguments[0].message = '[' + fnName + niceArgs(callArguments) + '] <= \n ' + arguments[0].message;
           }
 
           if (customCb) {
