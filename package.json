@@ -1,6 +1,6 @@
 {
   "name": "chainit",
-  "version": "2.0.1-backcompat",
+  "version": "2.0.2-backcompat",
   "description": "Turn an asynchronous JavaScript api into an asynchronous chainable JavaScript api.",
   "main": "index.js",
   "directories": {
