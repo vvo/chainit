@@ -1,6 +1,6 @@
 {
   "name": "chainit",
-  "version": "2.0.2-backcompat",
+  "version": "2.0.3",
   "description": "Turn an asynchronous JavaScript api into an asynchronous chainable JavaScript api.",
   "main": "index.js",
   "directories": {
@@ -12,8 +12,8 @@
   "author": "Vincent Voyer <vincent@zeroload.net>",
   "license": "MIT/X11",
   "devDependencies": {
-    "mocha": "~1.17.1",
-    "zuul": "~1.5.4"
+    "mocha": "~1.18.2",
+    "zuul": "~1.6.3"
   },
   "dependencies": {
     "queue": "~1.0.2"
