@@ -129,6 +129,8 @@ function chainit(Constructor) {
               name: fnName,
               args: niceArgs(callArguments)
             });
+          } else if (err instanceof Error) {
+            err.message = '[' + fnName + niceArgs(callArguments) + '] <= \n ' + err.message;
           }
 
           if (customCb) {
