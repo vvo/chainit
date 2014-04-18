@@ -101,20 +101,6 @@ function chainit(Constructor) {
       var callArguments = Array.prototype.slice.call(arguments);
       var args = Array.prototype.slice.call(arguments);
       var customCb;
-      var commandCallback = function() {
-        var cbArgs = arguments;
-
-        if (arguments[0] instanceof Error) {
-
-          arguments[0].message = '[' + fnName + niceArgs(callArguments) + '] <= \n ' + arguments[0].message;
-        }
-
-        if (customCb) {
-          customCb.apply(ctx, cbArgs);
-        }
-
-        cb();
-      }
 
       if (callArguments[callArguments.length - 1] instanceof Function) {
         callArguments.pop();
@@ -133,8 +119,27 @@ function chainit(Constructor) {
       var task = function(cb) {
       process.nextTick(function() {
         currentDepth = ldepth + 1;
-        commandCallback.hasCustomCallback = !!customCb;
-        args.push(commandCallback);
+
+        args.push(function() {
+          var cbArgs = arguments,
+              err = arguments[0];
+
+          if (err instanceof Error && typeof err.addToCallStack === 'function') {
+            err.addToCallStack({
+              name: fnName,
+              args: niceArgs(callArguments)
+            });
+          }
+
+          if (customCb) {
+            customCb.apply(ctx, cbArgs);
+          } else if (err instanceof Error) {
+            // throw error if it isn't handled by a custom callback
+            throw err;
+          }
+
+          cb();
+        });
 
         fn.apply(ctx, args);
       });
