@@ -121,15 +121,21 @@ function chainit(Constructor) {
         currentDepth = ldepth + 1;
 
         args.push(function() {
-          var cbArgs = arguments;
+          var cbArgs = arguments,
+              err = arguments[0];
 
-          if (arguments[0] instanceof Error) {
-
-            arguments[0].message = '[' + fnName + niceArgs(callArguments) + '] <= \n ' + arguments[0].message;
+          if (err instanceof Error && typeof err.addToCallStack === 'function') {
+            err.addToCallStack({
+              name: fnName,
+              args: niceArgs(callArguments)
+            });
           }
 
           if (customCb) {
             customCb.apply(ctx, cbArgs);
+          } else if (err instanceof Error) {
+            // throw error if it isn't handled by a custom callback
+            throw err;
           }
 
           cb();
