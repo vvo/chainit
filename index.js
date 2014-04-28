@@ -79,7 +79,7 @@ function chainit(Constructor) {
   // static methods, not chained
   Object.keys(Constructor)
     .forEach(function(name) {
-      Chain[name] = new Function(Constructor[name]);
+      Chain[name] = Constructor[name];
     });
 
   // prototype methods, chained

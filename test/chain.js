@@ -392,4 +392,103 @@ describe('chaining an Api', function() {
 
   });
 
+  describe('should be able to chain', function() {
+
+    describe('static', function() {
+
+      it('anonymous function expressions', function() {
+        var Class = function() {};
+        var executed = false;
+
+        Class.method = function() {
+          executed = true;
+        };
+
+        var NewClass = chainit(Class);
+        var o = new NewClass();
+
+        // should exist
+        assert.ok(NewClass.method);
+        NewClass.method();
+        assert.ok(executed);
+
+        // should not exists because method is static
+        assert.strictEqual(typeof o.method,'undefined');
+      });
+
+      it('named function expressions', function() {
+        var Class = function() {};
+        var executed = false;
+
+        Class.method = function method() {
+          executed = true;
+        };
+
+        var NewClass = chainit(Class);
+        var o = new NewClass();
+
+        // should exist
+        assert.ok(NewClass.method);
+        NewClass.method();
+        assert.ok(executed);
+
+        // should not exists because method is static
+        assert.strictEqual(typeof o.method,'undefined');
+      });
+
+    });
+
+    describe('prototypical', function() {
+
+      it('anonymous function expressions', function(done) {
+        var Class = function() {};
+        var executed = false;
+
+        Class.prototype.method = function(obsolete,cb) {
+          executed = true;
+          cb();
+        };
+
+        var NewClass = chainit(Class);
+        var o = new NewClass();
+
+        // should not exist because method is a prototype function
+        assert.strictEqual(typeof NewClass.method, 'undefined');
+
+        // should exists
+        assert.ok(o.method);
+        o.method('obsolete', function() {
+          assert.ok(executed);
+          done();
+        });
+
+      });
+
+      it('named function expressions', function(done) {
+        var Class = function() {};
+        var executed = false;
+
+        Class.prototype.method = function method(obsolete,cb) {
+          executed = true;
+          cb();
+        };
+
+        var NewClass = chainit(Class);
+        var o = new NewClass();
+
+        // should not exist because method is a prototype function
+        assert.strictEqual(typeof NewClass.method, 'undefined');
+
+        // should exists
+        assert.ok(o.method);
+        o.method('obsolete', function() {
+          assert.ok(executed);
+          done();
+        });
+
+      });
+    });
+
+  });
+
 });

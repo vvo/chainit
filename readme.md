@@ -70,6 +70,7 @@ Features:
 
 * supports async apis
 * supports (crazy) nested calls
+* supports static and prototype methods
 * preserve nested calls order
 * preserve context in cb()
 * preserve cb(args)
