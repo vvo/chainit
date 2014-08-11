@@ -106,7 +106,7 @@ function chainit(Constructor) {
         callArguments.pop();
       }
 
-      if((typeof args[args.length - 1] === 'function') && (!ctx.constructor || ctx.constructor.name !== 'WebdriverJs' || fnName.indexOf('execute') === -1 || args.length > 1)) {
+      if((typeof args[args.length - 1] === 'function') && (!ctx.constructor || ctx.constructor.name !== 'WebdriverIO' || fnName.indexOf('execute') === -1 || args.length > 1)) {
         customCb = args.pop();
       }
 
