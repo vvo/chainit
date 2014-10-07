@@ -10,6 +10,9 @@
     "test": "zuul -- test/chain.js"
   },
   "author": "Vincent Voyer <vincent@zeroload.net>",
+  "contributors": [
+    "Jérémy Lal <kapouer@melix.org>"
+  ],
   "license": "MIT/X11",
   "devDependencies": {
     "mocha": "~1.18.2",
