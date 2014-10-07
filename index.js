@@ -124,19 +124,16 @@ function chainit(Constructor) {
           var cbArgs = arguments,
               err = arguments[0];
 
-          if (err instanceof Error && typeof err.addToCallStack === 'function') {
-            err.addToCallStack({
-              name: fnName,
-              args: niceArgs(callArguments)
-            });
-          } else if (err instanceof Error) {
-            err.message = '[' + fnName + niceArgs(callArguments) + '] <= \n ' + err.message;
+          if (err) {
+            // flush the current queue
+            queues[ldepth].splice(0, Number.MAX_VALUE);
           }
 
           if (customCb) {
             customCb.apply(ctx, cbArgs);
           } else if (err instanceof Error) {
             // throw error if it isn't handled by a custom callback
+            err.message = '[' + fnName + niceArgs(callArguments) + '] <= \n ' + err.message;
             throw err;
           }
 
