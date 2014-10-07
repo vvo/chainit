@@ -1,6 +1,6 @@
 {
   "name": "chainit",
-  "version": "2.1.1",
+  "version": "3.0.0",
   "description": "Turn an asynchronous JavaScript api into an asynchronous chainable JavaScript api.",
   "main": "index.js",
   "directories": {
