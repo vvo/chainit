@@ -94,11 +94,12 @@ function chainit(Constructor) {
           var cbArgs = arguments,
               err = arguments[0];
 
-          if (err) {
-            current.error = err;
-          }
           if (customCb) {
             customCb.apply(ctx, cbArgs);
+          }
+          if (err) {
+            if (customCb) current.end();
+            else current.error = err;
           }
           cb();
         });
@@ -111,8 +112,8 @@ function chainit(Constructor) {
         }
         if (current.error) {
           if (customCb) {
-            customCb.call(ctx, current.error);
             current.end();
+            customCb.call(ctx, current.error);
           } else {
             if (current.length == current.pending) {
               throw current.error;

@@ -173,6 +173,22 @@ describe('chaining an Api', function() {
       });
   })
 
+  it('stops immediately further execution on error', function(done) {
+    var val;
+    o
+      .concat('er')
+      .getErrorNow('stopped', function(err) {
+        val = this.s;
+        setTimeout(function() {
+          assert.equal(val, "er");
+          done();
+        }, 60);
+      })
+      .fastConcat('ror', function(err) {
+        val = this.s;
+      });
+  })
+
   it('propagates error to the next callback', function(done) {
     var val;
     o

@@ -17,6 +17,15 @@ Api.prototype.slowConcat = function concat(sub, cb) {
   }, getRandomArbitrary(100, 200));
 }
 
+Api.prototype.fastConcat = function concat(sub, cb) {
+  this.s = this.s.concat(sub);
+  cb();
+}
+
+Api.prototype.getErrorNow = function getError(text, cb) {
+  cb(new Error(text));
+}
+
 Api.prototype.getError = function getError(text, cb) {
   setTimeout(function() {
     cb(new Error(text));
