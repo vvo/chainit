@@ -151,7 +151,7 @@ describe('chaining an Api', function() {
       .concat('er')
       .concat('ror', function() {
         this.getError('some text error', function(err) {
-          assert.equal(err.message, '[getError("some text error")] <= \n some text error');
+          assert.equal(err.message, 'some text error');
           done(null);
         })
       })

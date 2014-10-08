@@ -74,13 +74,8 @@ function chainit(Constructor) {
 
     return function chained() {
       var ctx = this;
-      var callArguments = Array.prototype.slice.call(arguments);
       var args = Array.prototype.slice.call(arguments);
       var customCb;
-
-      if (callArguments[callArguments.length - 1] instanceof Function) {
-        callArguments.pop();
-      }
 
       if(typeof args[args.length - 1] === 'function') {
         customCb = args.pop();
@@ -108,7 +103,6 @@ function chainit(Constructor) {
             customCb.apply(ctx, cbArgs);
           } else if (err instanceof Error) {
             // throw error if it isn't handled by a custom callback
-            err.message = '[' + fnName + niceArgs(callArguments) + '] <= \n ' + err.message;
             throw err;
           }
 
@@ -143,10 +137,3 @@ chainit.add = function add(to, fnName, fn) {
 function hasPending(queue) {
   return queue.length >= 1;
 }
-
-// c/p from https://github.com/admc/wd/blob/311c39ff2a2a3005405bc5872f420b359a5aa397/lib/utils.js#L108
-function niceArgs(args) {
-  return JSON.stringify(args)
-    .replace(/^\[/, '(')
-    .replace(/\]$/, ')');
-};
