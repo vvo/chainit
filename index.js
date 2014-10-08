@@ -111,12 +111,15 @@ function chainit(Constructor) {
           }
         }
         if (current.error) {
+          var err = current.error;
           if (customCb) {
             current.end();
-            customCb.call(ctx, current.error);
+            customCb.call(ctx, err);
+            delete current.error;
           } else {
             if (current.length == current.pending) {
-              throw current.error;
+              delete current.error;
+              throw err;
             }
           }
           cb();
