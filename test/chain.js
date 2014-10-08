@@ -203,6 +203,16 @@ describe('chaining an Api', function() {
       })
   })
 
+  it('must catch and propagate immediate error', function(done) {
+    o
+      .concat('er')
+      .getErrorNow('stopped')
+      .concat('a', function(err) {
+        assert.equal(err.message, 'stopped');
+        done();
+      })
+  })
+
   it('propagates error to the next callback', function(done) {
     var val;
     o

@@ -101,7 +101,7 @@ function chainit(Constructor) {
             if (customCb) current.end();
             else current.error = err;
           }
-          cb();
+          setImmediate(cb);
         });
         if (!current.error) {
           try {
