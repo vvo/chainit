@@ -64,6 +64,25 @@ var obj2 = new MyChainApi();
 obj2.method1(); // calls the newly chained prototype `method1`
 ```
 
+## error handling
+
+Upon error, execution is stopped and the nearest callback is called,
+or the error is thrown:
+
+```js
+obj
+  .method1()
+  .methodError()
+  .notactuallycalled(function(err) {
+    // the error that happened in methodError
+    // but the method "notactuallycalled" is not called !
+    console.error(err);
+  });
+```
+
+Uncaught errors are also caught and handled the same way - which
+adds some safety to the original API.
+
 ## features
 
 Features:
@@ -71,9 +90,12 @@ Features:
 * supports async apis
 * supports (crazy) nested calls
 * supports static and prototype methods
-* preserve nested calls order
-* preserve context in cb()
-* preserve cb(args)
+* preserves nested calls order
+* preserves context in cb()
+* preserves cb(args)
+* stops execution on error
+* propagates error to the nearest callback
+* throws error if no callback is found
 * supports process.nextTick(cb)
 * supports setTimeout(cb)
 * supports methods redifinition

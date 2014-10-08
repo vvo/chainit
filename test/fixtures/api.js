@@ -23,6 +23,10 @@ Api.prototype.getError = function getError(text, cb) {
   }, getRandomArbitrary(4, 30));
 }
 
+Api.prototype.throwError = function throwError(text, cb) {
+  throw new Error(text);
+}
+
 Api.prototype.tripleConcat = function callConcat(prefix, cb) {
   this.concat(prefix + '1-', function() {
     this

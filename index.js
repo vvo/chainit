@@ -89,23 +89,37 @@ function chainit(Constructor) {
 
       var task = function(cb) { setImmediate(function() {
         currentDepth = ldepth + 1;
+        var current = queues[ldepth];
         args.push(function() {
           var cbArgs = arguments,
               err = arguments[0];
 
           if (err) {
-            // flush the current queue
-            queues[ldepth].end();
+            current.error = err;
           }
           if (customCb) {
             customCb.apply(ctx, cbArgs);
-          } else if (err instanceof Error) {
-            // throw error if it isn't handled by a custom callback
-            throw err;
           }
           cb();
         });
-        fn.apply(ctx, args);
+        if (!current.error) {
+          try {
+            fn.apply(ctx, args);
+          } catch(e) {
+            current.error = e;
+          }
+        }
+        if (current.error) {
+          if (customCb) {
+            customCb.call(ctx, current.error);
+            current.end();
+          } else {
+            if (current.length == current.pending) {
+              throw current.error;
+            }
+          }
+          cb();
+        }
       }); };
       pushTo(ldepth, task);
 

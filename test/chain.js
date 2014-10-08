@@ -157,6 +157,43 @@ describe('chaining an Api', function() {
       })
   })
 
+  it('stops further execution on error', function(done) {
+    var val;
+    o
+      .concat('er')
+      .getError('stopped', function(err) {
+        val = this.s;
+        setTimeout(function() {
+          assert.equal(val, "er");
+          done();
+        }, 60);
+      })
+      .concat('ror', function(err) {
+        val = this.s;
+      });
+  })
+
+  it('propagates error to the next callback', function(done) {
+    var val;
+    o
+      .concat('er')
+      .getError('stopped')
+      .concat('ror', function(err) {
+        assert.equal(err.message, 'stopped');
+        done();
+      });
+  })
+
+  it('catch errors in action and propagates to the next callback', function(done) {
+    var val;
+    o
+      .concat('er')
+      .throwError('stopped', function(err) {
+        assert.equal(err.message, 'stopped');
+        done();
+      })
+  })
+
   it('supports nextTicked calls', function(done) {
     o
       .concat('ne', function() {
