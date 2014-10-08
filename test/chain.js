@@ -189,6 +189,20 @@ describe('chaining an Api', function() {
       });
   })
 
+  it('allow reuse of chain after having caught an error', function(done) {
+    var val;
+    o
+      .concat('er')
+      .getError('stopped')
+      .concat('a', function(err) {
+        assert.equal(err.message, 'stopped');
+        this.concat('ror', function() {
+          assert.equal(this.s, 'error');
+          done();
+        });
+      })
+  })
+
   it('propagates error to the next callback', function(done) {
     var val;
     o
