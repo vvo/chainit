@@ -15,15 +15,14 @@ describe('chaining an Api', function() {
     var ChainApi = chainit(Api);
     var b = new ChainApi();
 
-    before(function() {
-      b.slowConcat('cou0').slowConcat('cou1');
-    });
-
     it('are supported', function(done) {
-      b.concat('bouh0').concat('bouh1', function() {
-        assert.equal(b.s, 'cou0cou1bouh0bouh1')
-        done();
-      })
+      b.slowConcat('cou0').slowConcat('cou1');
+      setImmediate(function() {
+        b.concat('bouh0').concat('bouh1', function() {
+          assert.equal(b.s, 'cou0cou1bouh0bouh1')
+          done();
+        });
+      });
     });
   });
 
