@@ -21,28 +21,25 @@ function chainit(Constructor) {
   }
 
   function getNewQueue(newDepth) {
-    var queue = new Queue({
+    var queue = Queue({
       timeout: 0,
       concurrency: 1
     });
 
-    queue.on('drain', function() {
+    queue.on('end', function(err) {
       if (newDepth > 0) {
         wakeupChain(newDepth);
       }
-
       if (!queues.slice(newDepth).some(hasPending)) {
         currentDepth = newDepth;
       }
     });
 
     function wakeupChain(depth) {
-      if (!queues[depth + 1] ||
-        !queues.slice(depth).some(hasPending)) {
+      if (!queues[depth + 1] || !queues.slice(depth).some(hasPending)) {
         queues[depth - 1].concurrency = 1;
-        queues[depth - 1].process();
+        queues[depth - 1].start();
       }
-
       if (depth > 1) {
         wakeupChain(depth - 1);
       } else {
@@ -104,7 +101,7 @@ function chainit(Constructor) {
 
           if (err) {
             // flush the current queue
-            queues[ldepth].splice(0, Number.MAX_VALUE);
+            queues[ldepth].end();
           }
 
           if (customCb) {
