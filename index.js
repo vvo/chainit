@@ -82,14 +82,13 @@ function chainit(Constructor) {
       }
 
       var ldepth = currentDepth;
-
-      if (currentDepth > 0 && queues[currentDepth - 1].concurrency > 0) {
-        queues[currentDepth - 1].concurrency = 0;
+      var previous = queues[ldepth - 1];
+      if (previous && previous.concurrency > 0) {
+        previous.concurrency = 0;
       }
 
       var task = function(cb) { setImmediate(function() {
         currentDepth = ldepth + 1;
-
         args.push(function() {
           var cbArgs = arguments,
               err = arguments[0];
@@ -98,22 +97,17 @@ function chainit(Constructor) {
             // flush the current queue
             queues[ldepth].end();
           }
-
           if (customCb) {
             customCb.apply(ctx, cbArgs);
           } else if (err instanceof Error) {
             // throw error if it isn't handled by a custom callback
             throw err;
           }
-
           cb();
         });
-
         fn.apply(ctx, args);
-      });
-      }
-
-      pushTo(currentDepth, task);
+      }); };
+      pushTo(ldepth, task);
 
       return this;
     }
