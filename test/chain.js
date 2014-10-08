@@ -190,7 +190,6 @@ describe('chaining an Api', function() {
   })
 
   it('allow reuse of chain after having caught an error', function(done) {
-    var val;
     o
       .concat('er')
       .getError('stopped')
