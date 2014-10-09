@@ -223,6 +223,13 @@ describe('chaining an Api', function() {
       });
   })
 
+  it('should not consider last argument as custom callback if there should have been more arguments', function(done) {
+    o.single(function myfun(sign) {
+      assert.equal(sign, "myfun1");
+      done();
+    });
+  });
+
   it('catch errors in action and propagates to the next callback', function(done) {
     var val;
     o

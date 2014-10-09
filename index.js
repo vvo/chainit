@@ -77,7 +77,7 @@ function chainit(Constructor) {
       var args = Array.prototype.slice.call(arguments);
       var customCb;
 
-      if(typeof args[args.length - 1] === 'function') {
+      if (fn.length <= args.length && typeof args[args.length - 1] === 'function') {
         customCb = args.pop();
       }
 

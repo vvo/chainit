@@ -52,6 +52,12 @@ Api.prototype.call = function call(cb) {
   process.nextTick(cb);
 }
 
+Api.prototype.single = function(fun, cb) {
+  setImmediate(function() {
+    fun(fun.name + fun.length);
+  });
+}
+
 Api.prototype.multiConcat = function(prefix, cb) {
   this
     .concat('a-', function() {
