@@ -6,6 +6,7 @@ Turn an asynchronous JavaScript api into an asynchronous
 This is a fork of [chainit](https://github.com/vvo/chainit), with more
 work into getting a well-defined behavior of the transformation.
 
+
 ## usage
 
 ```js
@@ -24,6 +25,7 @@ obj
   })
   .method2();                     // 5th call
 ```
+
 
 ## Adding or overriding methods
 
@@ -64,6 +66,7 @@ var obj2 = new MyChainApi();
 
 obj2.method1(); // calls the newly chained prototype `method1`
 ```
+
 
 ## error handling
 
@@ -119,7 +122,7 @@ Features:
 * preserves cb(args)
 * stops execution on error
 * propagates error to the nearest callback
-* throws error if no callback is found
+* throws error if no callback can handle it
 * supports method(fun, cb) signatures
 * supports process.nextTick(cb)
 * supports setTimeout(cb)
@@ -127,17 +130,6 @@ Features:
 * supports adding new methods
 * fully tested! local: `npm install -g mocha && mocha`, saucelabs: `npm test`
 
-## tests
-
-See [tests](test/).
-
-```shell
-npm test
-```
-
-## examples
-
-See [examples](examples/).
 
 ## mixing async/sync apis
 
@@ -161,6 +153,7 @@ Either your api is fully synchronous.
 If you want synchronous support, make a pull request
 adding `chainit.sync(Constructor)`.
 
+
 ## credits
 
 This module is using [jessetane/queue](https://github.com/jessetane/queue).
@@ -169,4 +162,5 @@ A chainable api is queueing methods and reordering calls, so we use a queue.
 
 This module was built to replace the chainable api from
 [webdriverjs](https://github.com/camme/webdriverjs).
-It is not used by more modules and is maintained with general use in mind now.
+
+It is now used by more modules and is maintained with general use in mind now.
