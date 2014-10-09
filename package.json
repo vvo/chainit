@@ -1,5 +1,5 @@
 {
-  "name": "chainit",
+  "name": "chainit3",
   "version": "3.0.3",
   "description": "Turn an asynchronous JavaScript api into an asynchronous chainable JavaScript api.",
   "main": "index.js",
@@ -9,8 +9,8 @@
   "scripts": {
     "test": "zuul -- test/chain.js"
   },
-  "author": "Vincent Voyer <vincent@zeroload.net>",
-  "contributors": [
+  "authors": [
+    "Vincent Voyer <vincent@zeroload.net>",
     "Jérémy Lal <kapouer@melix.org>"
   ],
   "license": "MIT",
@@ -33,6 +33,6 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/vvo/chainit.git"
+    "url": "git://github.com/kapouer/chainit.git"
   }
 }
