@@ -213,7 +213,6 @@ describe('chaining an Api', function() {
   })
 
   it('propagates error to the next callback', function(done) {
-    var val;
     o
       .concat('er')
       .getError('stopped')
