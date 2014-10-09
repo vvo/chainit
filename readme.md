@@ -84,6 +84,29 @@ obj
 Uncaught errors are also caught and handled the same way - which
 adds some safety to the original API.
 
+
+## variable length arguments
+
+Methods that have a variable number of arguments require special handling.
+It is advised to define those methods with the smallest number of required
+arguments:
+
+```js
+function(uri, cb) {
+  var opts = {};
+  if (typeof cb != "function") {
+    opts = cb;
+    cb = arguments[2];
+  }
+  // ...
+}
+```
+
+This automatically excludes the case where the function can accept
+(uri, myfun, cb) with myfun as an optional argument.
+This is actually a good thing because it prevents undefined behavior.
+
+
 ## features
 
 Features:
@@ -97,6 +120,7 @@ Features:
 * stops execution on error
 * propagates error to the nearest callback
 * throws error if no callback is found
+* supports method(fun, cb) signatures
 * supports process.nextTick(cb)
 * supports setTimeout(cb)
 * supports methods redifinition
@@ -145,3 +169,4 @@ A chainable api is queueing methods and reordering calls, so we use a queue.
 
 This module was built to replace the chainable api from
 [webdriverjs](https://github.com/camme/webdriverjs).
+It is not used by more modules and is maintained with general use in mind now.
