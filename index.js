@@ -15,6 +15,7 @@ function chainit(Constructor) {
   function pushTo(depth, task) {
     var queue = queues[depth] || (queues[depth] = getNewQueue(depth));
     queue.push(task);
+    queue.lastState = task.state;
     setImmediate(function() {
       if (!queue.running) queue.start();
     });
@@ -67,17 +68,17 @@ function chainit(Constructor) {
 
   allFn
     .forEach(function(fnName) {
-      Chain.prototype[fnName] = makeChain(fnName, Constructor.prototype[fnName]);
+      Chain.prototype[fnName] = makeChain(Constructor.prototype[fnName]);
     });
 
-  function makeChain(fnName, fn) {
+  function makeChain(fnq, fnn) {
 
     return function chained() {
       var ctx = this;
       var args = Array.prototype.slice.call(arguments);
       var customCb;
 
-      if (fn.length <= args.length && typeof args[args.length - 1] === 'function') {
+      if (fnq.length <= args.length && typeof args[args.length - 1] === 'function') {
         customCb = args.pop();
       }
 
@@ -105,7 +106,7 @@ function chainit(Constructor) {
         });
         if (!current.error) {
           try {
-            fn.apply(ctx, args);
+            fnq.apply(ctx, args);
           } catch(e) {
             current.error = e;
           }
@@ -125,24 +126,36 @@ function chainit(Constructor) {
           cb();
         }
       }); };
+
+      var queue = queues[ldepth];
+      var prevTask = queue && queue.slice(-1).pop();
+      var state = prevTask && prevTask.state || queue && queue.lastState || previous && previous.lastState;
+      if (fnn) {
+        ctx.chainState = state;
+        fnn.apply(ctx, args);
+        state = ctx.chainState; // fnn can create a new state
+      }
+      task.state = state;
+
+
       pushTo(ldepth, task);
 
       return this;
     }
   }
 
-  Chain.prototype.__addToChain = function(fnName, fn) {
-    this[fnName] = makeChain(fnName, fn);
+  Chain.prototype.__addToChain = function(fnName, fnq, fnn) {
+    this[fnName] = makeChain(fnq, fnn);
   }
 
   return Chain;
 }
 
-chainit.add = function add(to, fnName, fn) {
+chainit.add = function add(to, fnName, fnq, fnn) {
   if (to.prototype && to.prototype.__addToChain) {
-    to.prototype.__addToChain(fnName, fn);
+    to.prototype.__addToChain(fnName, fnq, fnn);
   } else {
-    to.__addToChain(fnName, fn);
+    to.__addToChain(fnName, fnq, fnn);
   }
 }
 

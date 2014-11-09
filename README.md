@@ -31,9 +31,8 @@ obj
 
 Adding and overriding methods works at both prototype level and instance level.
 
-You must use `chainit.add(chain, methodName, method)`,
-you can't do direct assignation (`chain.methodName = method`) because
-`object.observe` is not yet ready.
+You must use `chainit.add(chain, methodName, method)`, since direct assignations
+won't wrap your method properly.
 
 ```js
 function MyApi() {}
@@ -66,6 +65,43 @@ var obj2 = new MyChainApi();
 
 obj2.method1(); // calls the newly chained prototype `method1`
 ```
+
+## Like a state machine
+
+It is also possible to have a custom function called immediately, in addition
+to the function that is queued:
+
+```js
+chainit.add(obj, 'method1', function queued1(sub, cb) {
+  //... the actual method
+}, function now1(sub) {
+  this.chainState = { one: true };
+});
+chainit.add(obj, 'method2', function queued2(var1, var2, cb) {
+
+}, function now2(var1, var2) {
+  if (!this.chainState || !this.chainState.one) throw new Error("method2 must be called after method1");
+  this.chainState.one = false;
+});
+
+// this works
+obj.method1(a, b).method2(a, b) // ok
+obj.method1(a, b, function() {
+  this.method2(a, b); // ok
+  this.method2(a, b); // not allowed by that simple state machine
+});
+
+```
+
+The first function is pushed to the queue, the second function is called
+immediately.
+
+The second function can set `this.chainState = someObject` and the queued
+function will be able to access that object.
+
+`this.chainState` reference is copied to the next queued (and immediate if any)
+functions: this behavior allows queued functions to get information about
+which functions were queued before or after them.
 
 
 ## error handling

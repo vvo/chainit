@@ -446,6 +446,41 @@ describe('chaining an Api', function() {
       })
   });
 
+  it("propagates a chainState object across queued and immediate methods", function(done) {
+    chainit.add(o, 'step1', function(sub, cb) {
+      this.s = 'step1-' + sub;
+      setImmediate(cb);
+    }, function(sub) {
+      assert.equal(typeof sub, "string");
+      this.chainState = { one: true };
+    });
+    chainit.add(o, 'step2', function(sub, cb) {
+      this.s += '-step2-' + sub;
+      setImmediate(cb);
+    }, function(sub) {
+      assert.equal(typeof sub, "string");
+      if (!this.chainState || !this.chainState.one) throw new Error("step2 must be called after step1");
+      this.chainState.one = false;
+    });
+        // this works
+    o.step1("test1").step2("test2", function(err) {
+      assert.equal(this.s, "step1-test1-step2-test2");
+      var err;
+      try {
+        o.step2('fail', function(err) {
+          assert.equal(true, false);
+        });
+      } catch(e) {
+        err = e;
+      }
+      assert.equal(!!err, true);
+      o.step1("test3").step2("test4", function(err) {
+        assert.equal(!!err, false);
+        done();
+      });
+    });
+  });
+
   describe('inherited APIS', function() {
     var ChainedInheritedApi;
 
