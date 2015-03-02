@@ -39,7 +39,7 @@ function chainit(Constructor) {
     function wakeupChain(depth) {
       if (!queues[depth + 1] || !queues.slice(depth).some(hasPending)) {
         queues[depth - 1].concurrency = 1;
-        queues[depth - 1].start();
+        if (hasPending(queues[depth - 1])) queues[depth - 1].start();
       }
       if (depth > 1) {
         wakeupChain(depth - 1);
